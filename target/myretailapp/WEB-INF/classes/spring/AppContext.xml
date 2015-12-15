@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:jdbc="http://www.springframework.org/schema/jdbc" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:jpa="http://www.springframework.org/schema/data/jpa"
+	xsi:schemaLocation=" http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+	http://www.springframework.org/schema/context
+	http://www.springframework.org/schema/context/spring-context-3.0.xsd
+	http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+	http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-3.0.xsd
+	http://www.springframework.org/schema/data/jpa
+	http://www.springframework.org/schema/data/jpa/spring-jpa.xsd ">
+
+	<bean class="org.springframework.jdbc.datasource.SimpleDriverDataSource"
+		id="dataSource">
+		<property name="driverClass" value="org.h2.Driver" />
+		<property name="url"
+			value="jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;MODE=MySQL" />
+	</bean>
+
+	<bean
+		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean"
+		id="entityManagerFactory">
+		<property name="persistenceUnitName" value="product" />
+		<property name="dataSource" ref="dataSource" />
+		<property name="jpaVendorAdapter" ref="jpaAdapter" />
+		<property name="packagesToScan" value="com.myretail.models" />
+	</bean>
+
+	<bean class="org.springframework.orm.jpa.JpaTransactionManager"
+		id="transactionManager">
+		<property name="entityManagerFactory" ref="entityManagerFactory" />
+	</bean>
+
+	<bean id="jpaAdapter"
+		class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
+		<property name="databasePlatform" value="org.hibernate.dialect.H2Dialect" />
+		<property name="showSql" value="true" />
+		<property name="generateDdl" value="false" />
+	</bean>
+
+	<tx:annotation-driven transaction-manager="transactionManager" />
+
+	<jdbc:initialize-database data-source="dataSource"
+		enabled="true" ignore-failures="DROPS">
+		<jdbc:script location="classpath:db/create-schema.sql" />
+		<jdbc:script location="classpath:db/load-test-data.sql" />
+	</jdbc:initialize-database>
+
+	<context:component-scan base-package="com.myretail.webservice"></context:component-scan>
+	<context:component-scan base-package="com.myretail.mvc"></context:component-scan>
+	
+	<bean
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix" value="/WEB-INF/jsp/" />
+		<property name="suffix" value=".jsp" />
+	</bean>
+	
+	<context:annotation-config />
+
+	<jpa:repositories base-package="com.myretail.repo"></jpa:repositories>
+
+	<bean id="ProductBO" class="com.myretail.bus.ProductBO"></bean>
+	<bean id="ProductDAO" class="com.myretail.data.ProductDAO"></bean>
+</beans>

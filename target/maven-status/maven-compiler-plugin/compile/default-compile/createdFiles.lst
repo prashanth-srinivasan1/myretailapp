@@ -1,0 +1,11 @@
+com\myretail\bus\ProductBO.class
+com\myretail\data\IProductDAO.class
+com\myretail\bus\IProductBO.class
+com\myretail\dto\Search.class
+com\myretail\mvc\ProductContoller.class
+com\myretail\models\Products.class
+com\myretail\data\ProductDAO.class
+com\myretail\models\Product.class
+com\myretail\webservice\RetailService.class
+com\myretail\dto\Product.class
+com\myretail\models\Price.class
